@@ -91,6 +91,8 @@ function grtGeo(address) {
             let a = result.geocodes[0].province
             let b = result.geocodes[0].city
             $('.city-dingwei span').eq(0).text(a + ' ' + b)
+            // 清空48小时天气
+            $(".weth-content-24 .weth-hover").html('')
             getWeather(a, b)
         }
     )
@@ -193,44 +195,40 @@ function getWeather(province, city) {
                     $('.tips .txt-tips').text(data.data.tips.observe[tipIdx])
                 }
             })
-            // 未来48小时天气
-            // 创建48小时天气
-            for (let i = 0; i < 46; i++) {
-                let li = document.createElement('li')
-                li.classList = ('item')
-                let p1 = document.createElement('p')
-                p1.classList = ('text-time')
-                let img = document.createElement('img')
-                img.src = './images/小天气/' + data.data.forecast_1h[i].weather_code + '.png'
-                let p2 = document.createElement('p')
-                p2.classList = ('text-tem')
-                li.appendChild(p1)
-                li.appendChild(img)
-                li.appendChild(p2)
-                $(".weth-content-24 .weth-hover").append(li)
-            }
-            let time48Arr = []
-            let textTime = document.querySelectorAll('.text-time')
-            let textTem = document.querySelectorAll('.text-tem')
-            let item48 = document.querySelectorAll('.weth-hover .item')
-            // let textTime = document.querySelectorAll('.text-time')
-            for (let i = 0; i < 46; i++) {
-                let time48 = data.data.forecast_1h[i].update_time
-                textTime[i].innerText = time48.slice(8, 10) + ':00'
+            // 未来46小时天气
+            // 创建46小时天气
+            function create46Weather() {
+                for (let i = 0; i < 46; i++) {
+                    let li = document.createElement('li')
+                    li.classList = ('item')
+                    let p1 = document.createElement('p')
+                    p1.classList = ('text-time')
+                    let img = document.createElement('img')
+                    img.src = './images/小天气/' + data.data.forecast_1h[i].weather_code + '.png'
+                    let p2 = document.createElement('p')
+                    p2.classList = ('text-tem')
+                    li.appendChild(p1)
+                    li.appendChild(img)
+                    li.appendChild(p2)
+                    $(".weth-content-24 .weth-hover").append(li)
+                }
+                let time48Arr = []
+                let textTime = document.querySelectorAll('.text-time')
+                let textTem = document.querySelectorAll('.text-tem')
+                let item48 = document.querySelectorAll('.weth-hover .item')
+                // let textTime = document.querySelectorAll('.text-time')
+                for (let i = 0; i < 46; i++) {
+                    let time48 = data.data.forecast_1h[i].update_time
+                    textTime[i].innerText = time48.slice(8, 10) + ':00'
 
-                let text48 = data.data.forecast_1h[i].degree
-                textTem[i].innerText = text48 + '°'
-                time48Arr[i] = time48.slice(8, 10)
-
-                // let riluoArr = time48Arr.filter(function(item){
-                //     return item=data.data.rise[0].sunrise
-                // })
-            }
-            // console.log(time48Arr);
-            // 日出
+                    let text48 = data.data.forecast_1h[i].degree
+                    textTem[i].innerText = text48 + '°'
+                    time48Arr[i] = time48.slice(8, 10)
+                }
+                // 日出
             function createRichuLi() {
                 let li = document.createElement('li')
-                li.classList = ('item')
+                li.classList = ('item richu')
                 let p1 = document.createElement('p')
                 p1.classList = ('text-time')
                 p1.innerHTML = data.data.rise[0].sunrise
@@ -247,11 +245,11 @@ function getWeather(province, city) {
                 let item48Parient = document.querySelector('.weth-content-24 .weth-hover')
                 item48Parient.insertBefore(li, item48[riluoIdx + 1])
             }
-            createRichuLi()
+            
             // 日落
             function createRiluoLi() {
                 let li = document.createElement('li')
-                li.classList = ('item')
+                li.classList = ('item riluo')
                 let p1 = document.createElement('p')
                 p1.classList = ('text-time')
                 p1.innerHTML = data.data.rise[0].sunset
@@ -269,8 +267,11 @@ function getWeather(province, city) {
                 let item48Parient = document.querySelector('.weth-content-24 .weth-hover')
                 item48Parient.insertBefore(li, item48[riluoIdx + 1])
             }
-            createRiluoLi()
-
+                createRichuLi()
+                createRiluoLi()
+            }
+            create46Weather()
+            
             // 七日天气预报
             let time = document.querySelectorAll('.ls-weather .date')
             // console.log(time);
