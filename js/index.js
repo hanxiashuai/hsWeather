@@ -93,6 +93,7 @@ function grtGeo(address) {
             $('.city-dingwei span').eq(0).text(a + ' ' + b)
             // 清空48小时天气
             $(".weth-content-24 .weth-hover").html('')
+            
             getWeather(a, b)
         }
     )
@@ -245,7 +246,7 @@ function getWeather(province, city) {
                 let item48Parient = document.querySelector('.weth-content-24 .weth-hover')
                 item48Parient.insertBefore(li, item48[riluoIdx + 1])
             }
-            
+
             // 日落
             function createRiluoLi() {
                 let li = document.createElement('li')
