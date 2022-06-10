@@ -57,6 +57,8 @@ $(document).ready(function () {
         $(".had-sch").blur(function () {
             setTimeout(function () {
                 $("#hot-city").css('display', 'none')
+                $('#ls-match').css('display', 'none')
+                $(".had-sch").val('');
             }, 200);
         })
     })
@@ -75,12 +77,13 @@ $.get(
         getWeather(result.province, result.city)
     }
 )
-// 讲点击的城市赋给定位
+// 将点击的城市赋给定位
 $('#hot-city').on('click', 'span', function () {
-    grtGeo($(this).text())
+    getGeo($(this).text())
 })
+
 // 封装点击获取城市
-function grtGeo(address) {
+function getGeo(address) {
     $.get(
         "https://restapi.amap.com/v3/geocode/geo?parameters",
         {
@@ -90,15 +93,80 @@ function grtGeo(address) {
         function (result) {
             let a = result.geocodes[0].province
             let b = result.geocodes[0].city
+            // 定位城市赋值
             $('.city-dingwei span').eq(0).text(a + ' ' + b)
             // 清空48小时天气
             $(".weth-content-24 .weth-hover").html('')
-
-            
+            // 调用天气
             getWeather(a, b)
         }
     )
 }
+
+// 将input点击的城市赋给定位
+$(".had-sch").bind('input propertychange', function () {
+    $('#ls-match').css('display', 'block')
+    $("#hot-city").css('display', 'none')
+    getInputGeo(this.value)
+
+});
+
+// 将点击的城市赋给定位
+$('#ls-match').on('click','li' ,function () {
+    getGeo($(this).text())
+    $(this).css('display', 'none')
+})
+
+// 封装inupt输入获取城市
+function getInputGeo(address) {
+    $.get(
+        "https://restapi.amap.com/v3/geocode/geo?parameters",
+        {
+            key: "319afb591a6f99aad078d4666d9906dc",
+            address: address,
+        },
+        function (result) {
+            // console.log(result);
+            if (result.status==1) {
+                let a = result.geocodes[0].province
+                let b = result.geocodes[0].city
+                let c = result.geocodes[0].district
+                $("#ls-match").html(`<li>${a},${b},${c}</li>`)
+            }else{
+                $("#ls-match").text('抱歉未找到相关位置')
+            }
+        }
+    )
+}
+
+
+
+// function a(address) {
+//     $.get(
+//         "https://restapi.amap.com/v3/assistant/inputtips?parameters",
+//         {
+//             key: "319afb591a6f99aad078d4666d9906dc",
+//             keywords: address,
+//         },
+//         function (result) {
+            // let a = result.geocodes[0].province
+            // let b = result.geocodes[0].city
+            // let c = result.geocodes[0].district
+            // console.log(a,b,c);
+            // $("#ls-match").text(a +','+b+','+c)
+            // console.log(result);
+            // 定位城市赋值
+            // $('.city-dingwei span').eq(0).text(a + ' ' + b)
+            // 清空48小时天气
+            // $(".weth-content-24 .weth-hover").html('')
+            // 调用天气
+            // getWeather(a, b)
+//         }
+//     )
+// }
+// a('龙')
+
+
 
 
 // 根据定位城市查询天气
@@ -162,18 +230,29 @@ function getWeather(province, city) {
                 $("#txt-wind").text("旋转风" + ' ' + data.data.observe.wind_power + "级")
             }
 
-
             // 湿度
             $('#txt-humidity').text('湿度' + ' ' + data.data.observe.humidity + '%')
-            // pressure
+
             // 空气质量
-            $('#aqi .info-aqi').text(data.data.air.aqi + ' ' + data.data.air.aqi_name)
+            let air = data.data.air
+            $('#aqi .info-aqi').text(air.aqi + ' ' + air.aqi_name)
+            $('#air-window .header').text('空气质量指数'+" "+air.aqi+' '+air.aqi_name)
+            $('#tb-detail .val').eq(0).text(air['pm2'+'.'+'5'])
+            $('#tb-detail .val').eq(1).text(air.pm10)
+            $('#tb-detail .val').eq(2).text(air.so2)
+            $('#tb-detail .val').eq(3).text(air.no2)
+            $('#tb-detail .val').eq(4).text(air.o3)
+            $('#tb-detail .val').eq(5).text(air.co)
+
+
             // 强对流预警
             let tag = data.data.alarm
-            if (tag = {}) {
-                $('#ls-warning .tag').css('display', 'none')
+            if (tag == {}) {
+                $('#ls-warning .leve101').css('display', 'none')
             } else {
-
+                $('#ls-warning .leve101').css('display', 'block')
+                $('.warning-window .header').text(tag[0].type_name + tag[0].level_name+'预警')
+                $('.warning-window .inner p').text(tag[0].detail)
             }
 
             // 限行
@@ -197,7 +276,6 @@ function getWeather(province, city) {
                     $('.tips .txt-tips').text(data.data.tips.observe[tipIdx])
                 }
             })
-            // 未来46小时天气
             // 创建46小时天气
             function create46Weather() {
                 for (let i = 0; i < 46; i++) {
@@ -228,52 +306,52 @@ function getWeather(province, city) {
                     time48Arr[i] = time48.slice(8, 10)
                 }
                 // 日出
-            function createRichuLi() {
-                let li = document.createElement('li')
-                li.classList = ('item richu')
-                let p1 = document.createElement('p')
-                p1.classList = ('text-time')
-                p1.innerHTML = data.data.rise[0].sunrise
-                let img = document.createElement('img')
-                img.src = './images/日出.png'
-                let p2 = document.createElement('p')
-                p2.classList = ('text-tem')
-                p2.innerHTML = '日出'
-                li.appendChild(p1)
-                li.appendChild(img)
-                li.appendChild(p2)
-                let riluoIdx = time48Arr.indexOf(data.data.rise[0].sunrise.slice(0, 2));
-                // console.log(riluoIdx);
-                let item48Parient = document.querySelector('.weth-content-24 .weth-hover')
-                item48Parient.insertBefore(li, item48[riluoIdx + 1])
-            }
+                function createRichuLi() {
+                    let li = document.createElement('li')
+                    li.classList = ('item richu')
+                    let p1 = document.createElement('p')
+                    p1.classList = ('text-time')
+                    p1.innerHTML = data.data.rise[0].sunrise
+                    let img = document.createElement('img')
+                    img.src = './images/日出.png'
+                    let p2 = document.createElement('p')
+                    p2.classList = ('text-tem')
+                    p2.innerHTML = '日出'
+                    li.appendChild(p1)
+                    li.appendChild(img)
+                    li.appendChild(p2)
+                    let riluoIdx = time48Arr.indexOf(data.data.rise[0].sunrise.slice(0, 2));
+                    // console.log(riluoIdx);
+                    let item48Parient = document.querySelector('.weth-content-24 .weth-hover')
+                    item48Parient.insertBefore(li, item48[riluoIdx + 1])
+                }
 
-            // 日落
-            function createRiluoLi() {
-                let li = document.createElement('li')
-                li.classList = ('item riluo')
-                let p1 = document.createElement('p')
-                p1.classList = ('text-time')
-                p1.innerHTML = data.data.rise[0].sunset
-                let img = document.createElement('img')
-                img.src = './images/日落.png'
-                let p2 = document.createElement('p')
-                p2.classList = ('text-tem')
-                p2.innerHTML = '日落'
-                li.appendChild(p1)
-                li.appendChild(img)
-                li.appendChild(p2)
+                // 日落
+                function createRiluoLi() {
+                    let li = document.createElement('li')
+                    li.classList = ('item riluo')
+                    let p1 = document.createElement('p')
+                    p1.classList = ('text-time')
+                    p1.innerHTML = data.data.rise[0].sunset
+                    let img = document.createElement('img')
+                    img.src = './images/日落.png'
+                    let p2 = document.createElement('p')
+                    p2.classList = ('text-tem')
+                    p2.innerHTML = '日落'
+                    li.appendChild(p1)
+                    li.appendChild(img)
+                    li.appendChild(p2)
 
-                let riluoIdx = time48Arr.indexOf(data.data.rise[0].sunset.slice(0, 2));
-                // console.log(riluoIdx);
-                let item48Parient = document.querySelector('.weth-content-24 .weth-hover')
-                item48Parient.insertBefore(li, item48[riluoIdx + 1])
-            }
+                    let riluoIdx = time48Arr.indexOf(data.data.rise[0].sunset.slice(0, 2));
+                    // console.log(riluoIdx);
+                    let item48Parient = document.querySelector('.weth-content-24 .weth-hover')
+                    item48Parient.insertBefore(li, item48[riluoIdx + 1])
+                }
                 createRichuLi()
                 createRiluoLi()
             }
             create46Weather()
-            
+
             // 七日天气预报
             let time = document.querySelectorAll('.ls-weather .date')
             // console.log(time);
@@ -300,7 +378,6 @@ function getWeather(province, city) {
                 // 温度变化折线图
                 wenduLineMin[i] = data.data.forecast_24h[i].min_degree
                 wenduLineMax[i] = data.data.forecast_24h[i].max_degree
-
             }
             console.log();
             for (let i = 0; i < $("#ls-weather-day .item:gt(3)").length; i++) {
@@ -332,7 +409,6 @@ function getWeather(province, city) {
             // 防晒
             pagesItemContent[5].innerText = liveIndex.sunscreen.name + ' ' + liveIndex.sunscreen.info
             pagesItemDetail[5].innerHTML = liveIndex.sunscreen.detail
-
             // 钓鱼
             pagesItemContent[6].innerText = liveIndex.fish.name + ' ' + liveIndex.fish.info
             pagesItemDetail[6].innerHTML = liveIndex.fish.detail
@@ -370,10 +446,10 @@ $(".btn-24>#btn-right").click(function () {
 $('.btn-live>#btn-left').click(function () {
     $('.pages-box').css('margin-left', '0')
 })
-
 $('.btn-live>#btn-right').click(function () {
     $('.pages-box').css('margin-left', '-440px')
 })
+
 // 七日天气live上下切换
 $('.pages-box .item').hover(
     function () {
@@ -385,9 +461,6 @@ $('.pages-box .item').hover(
         $(a).css('margin-top', '0px')
     }
 );
-
-
-
 
 
 // 封装折线图
@@ -495,8 +568,6 @@ function zheXianPic() {
     myChart.setOption(option);
     window.addEventListener('resize', myChart.resize);
 }
-
-
 // 封装转换星期
 function incomeDetail(date) {
     let dateStr = date.substring(0, 4) + "/" + date.substring(5, 7) + "/" + date.substring(8, 10);

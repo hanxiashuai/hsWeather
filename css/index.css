@@ -187,6 +187,27 @@ body, html {
     font-size: 14px;
 }
 
+#ls-match{
+    display: none;
+    position: absolute;
+    width: 100%;
+    top: 30px;
+    overflow: auto;
+    background: #fff;
+    box-shadow: 0 0 4px 0 rgb(0 0 0 / 15%);
+    border-radius: 5px;
+    max-height: 210px;
+    margin-top: 4px;
+    padding: 8px;
+    cursor: pointer;
+    text-align: center;
+}
+
+#ls-match li{
+    color:#777;
+    text-align: left;
+}
+
 .sch-box .had-sch {
     font-family: "Microsoft Yahei";
     border-radius: 49px;
@@ -314,11 +335,6 @@ body, html {
     position: relative;
 }
 
-/* 隐藏具体天气介绍 */
-.content .popwindow {
-    display: none;
-}
-
 /* 气象台 */
 .content #txt-time {
     font-size: 14px;
@@ -387,6 +403,81 @@ body, html {
     display: inline-block;
 }
 
+/* 空气质量具体内容表格 */
+#air-window{
+    display: none;
+}
+#aqi:hover #air-window{
+    display: block;
+}
+
+#air-window .header{
+    background-color: #f0cc35;
+    border-radius: 6px 6px 0 0;
+    height: 42px;
+    line-height: 42px;
+    font-size: 18px;
+    color: #fff;
+    text-align: center;
+    justify-content: center;
+}
+/* 表格外壳 */
+#air-window .detail{
+    min-height: 126px;
+    overflow-y: hidden;
+    padding: 0 10px 10px 10px;
+    margin: 0 -10px;
+}
+
+#air-window .detail .inner{
+    background: #fff;
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 4px 10px 0 rgb(0 0 0 / 10%);
+}
+/* 表格 */
+#air-window #tb-detail {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    table-layout: fixed;
+}
+
+#air-window #tb-detail tr {
+    height: 63px;
+}
+
+#air-window #tb-detail .line1 {
+    border-bottom: 1px solid #efefef;
+}
+
+#air-window #tb-detail .nth-2 {
+    border-left: 1px solid #efefef;
+    border-right: 1px solid #efefef;
+}
+
+.popwindow .val {
+    font-size: 14px;
+    color: #555;
+    line-height: 24px;
+}
+
+.popwindow .titl {
+    font-size: 12px;
+    color: #9f9f9f;
+    line-height: 24px;
+}
+
+.popwindow {
+    position: absolute;
+    /* display: none; */
+    z-index: 2;
+    height: 169px;
+    width: 254px;
+    top: 36px;
+    left: 50%;
+    margin-left: -127px;
+}
+
 /* 第一行强对流预警 */
 #ls-warning .tag {
     background-color: #86c5f7;
@@ -402,6 +493,53 @@ body, html {
     position: relative;
 }
 
+
+#ls-warning .level01:hover .warning-window{
+    display: block;
+}
+
+
+/* 强对流预警 */
+#ls-warning .popwindow {
+    position: absolute;
+    display: none;
+    z-index: 2;
+    height: 169px;
+    width: 254px;
+    top: 36px;
+    left: 50%;
+    margin-left: -127px;
+}
+
+/* 强对流预警头部 */
+#ls-warning .popwindow  .header{
+    background-color: #86c5f7;
+    border-radius: 6px 6px 0 0;
+    height: 42px;
+    line-height: 42px;
+    font-size: 18px;
+    color: #fff;
+    text-align: center;
+    justify-content: center;
+}
+/* 强对流预警内容区 */
+#ls-warning .popwindow .detail{
+    min-height: 126px;
+    overflow-y: hidden;
+    padding: 0 10px 10px 10px;
+    margin: 0 -10px;
+}
+#ls-warning .popwindow .detail .inner{
+    background: #fff;
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 4px 10px 0 rgb(0 0 0 / 10%);
+}
+#ls-warning .popwindow .detail .inner p{
+    padding: 14px 20px 5px;
+    font-size: 14px;
+    color: #555;
+    line-height: 24px;
+}
 
 #ct-other {
     vertical-align: middle;
