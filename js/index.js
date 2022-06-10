@@ -247,8 +247,8 @@ function getWeather(province, city) {
 
             // 强对流预警
             let tag = data.data.alarm
-            if (tag == {}) {
-                $('#ls-warning .leve101').css('display', 'none')
+            if (!tag[0]) {
+                $('#ls-warning').css('display', 'none')
             } else {
                 $('#ls-warning .leve101').css('display', 'block')
                 $('.warning-window .header').text(tag[0].type_name + tag[0].level_name+'预警')
